@@ -4,7 +4,7 @@ if(isset($_POST['login']) && isset($_POST['password']))
   {
     $aulogin=$_POST['login'];
     $autpaswd=md5($_POST['password']);
-    $sql
+    $sqllogin
 
   }
  ?>
