@@ -1,6 +1,10 @@
 <?php
 require_once '../config/db.connect.php';
 session_start();
+if(!isset($_SESSION['login_name']))
+  {
+    header('Location: ../index.php');
+  }
 ?>
 <!doctype html>
 <html lang="ru">

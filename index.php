@@ -52,12 +52,12 @@ if(isset($_POST['login']) && isset($_POST['password']))
         echo '<p class="text-danger">Неверно указан логин или пароль </p>';
       }?>
       <label for="login" class="sr-only">Имя пользователя</label>
-      <input type="login" name="login" id="inputlogin" class="form-control" placeholder="login" required autofocus>
+      <input type="login" name="login" id="inputlogin" class="form-control" placeholder="Имя пользователя" required autofocus>
       <label for="inputPassword" class="sr-only">Password</label>
-      <input type="password" name="password" id="inputPassword" class="form-control" required>
+      <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Пароль" required>
       <div class="btn checkbox mb-3" autocomplete="off">
         <label>
-          <input class="" type="checkbox" value="remember-me" autocomplete="off"> Remember me
+          <input class="btn btn-primary" disabled="disabled" type="checkbox" value="remember-me" autocomplete="off"> Remember me
         </label>
       </div>
       <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
