@@ -1,10 +1,28 @@
 <?php
+require_once 'config/db.connect.php';
 session_start();
 if(isset($_POST['login']) && isset($_POST['password']))
   {
-    $aulogin=$_POST['login'];
-    $autpaswd=md5($_POST['password']);
-    $sqllogin
+    $autlogin=mysqli_real_escape_string($_POST['login']);
+    $autpaswd=mysqli_real_escape_string(md5($_POST['password']));
+    $sqlaut="select id, login_name, password, last_name, role, group, role, from users where login_name='$autlogin' and password='$autpaswd'";
+    $dbaut=mysqli_query($connect, $sqlaut);
+    $aut=mysqli_fetch_assoc($dbaut);
+    print_r($aut);
+    if(($autlogin==$aut['login_name']) && ($autpaswd==$aut['password']))
+      {
+        $_SESSION['login_name']=$aut['login_name'];
+        $_SESSION['last_name']=$aut['last_name'];
+        $_SESSION['group']=$aut['group'];
+        $_SESSION['role']=$aut['role'];
+        header('Location: web/start.php');
+      }
+    else
+    {
+      $error_login='Веден неправильный логин или пароль ';
+    }
+
+  //  $sqllogin
 
   }
  ?>
@@ -20,19 +38,19 @@ if(isset($_POST['login']) && isset($_POST['password']))
 
     <title>Вход</title>
     <!-- Custom styles for this template -->
-   <link href="signin.css" rel="stylesheet">
+   <link href="css/signin.css" rel="stylesheet">
   </head>
   <body>
-    <form action="index.php" class="form-signin" method="get">
+    <form action="index.php" class="form-signin" method="post">
     <!!!  <img class="mb-4" alt="" width="72" height="72"!!!>
       <h1 class="h3 mb-3 font-weight-normal">Авторизация</h1>
       <label for="login" class="sr-only">Имя пользователя</label>
       <input type="login" name="login" id="inputlogin" class="form-control" placeholder="login" required autofocus>
       <label for="inputPassword" class="sr-only">Password</label>
       <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
-      <div class="checkbox mb-3">
+      <div class="btn checkbox mb-3" autocomplete="off">
         <label>
-          <input class="inactive" type="checkbox" value="remember-me"> Remember me
+          <input class="" type="checkbox" value="remember-me" autocomplete="off"> Remember me
         </label>
       </div>
       <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
