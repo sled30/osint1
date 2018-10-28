@@ -5,7 +5,8 @@ if(isset($_POST['login']) && isset($_POST['password']))
   {
     $autlogin=mysqli_real_escape_string($_POST['login']);
     $autpaswd=mysqli_real_escape_string(md5($_POST['password']));
-    $sqlaut="select id, login_name, password, last_name, role, group, role, from users where login_name='$autlogin' and password='$autpaswd'";
+    $sqlaut="select id, login_name, password, last_name, role, group, role, from users
+    where login_name='$autlogin' and password='$autpaswd'";
     $dbaut=mysqli_query($connect, $sqlaut);
     $aut=mysqli_fetch_assoc($dbaut);
     print_r($aut);
@@ -15,7 +16,7 @@ if(isset($_POST['login']) && isset($_POST['password']))
         $_SESSION['last_name']=$aut['last_name'];
         $_SESSION['group']=$aut['group'];
         $_SESSION['role']=$aut['role'];
-        header('Location: web/start.php');
+        //header('Location: web/start.php');
       }
     else
     {
