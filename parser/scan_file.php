@@ -6,7 +6,9 @@ $list_directori=scandir('/var/www/html/upload',SCANDIR_SORT_NONE);
 $count_scan_file=1;
 foreach ($list_directori as $key)
 {
-  if(!is_dir($key))
+  $file="/var/www/html/upload/$key";
+  echo $file . "\n";
+  if(is_file($file))
   {
     $sql_find_file="select id from loadd_file where name='$key'";
     $db_find_file=mysqli_query($connect, $sql_find_file);
