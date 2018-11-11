@@ -1,6 +1,6 @@
 <?php
 set_time_limit(0);
-$stream=1;
+$stream=2;
 require_once '../config/db.connect.php';
 require_once 'function.php';
 $load_dir="/var/www/html/upload/in/";
