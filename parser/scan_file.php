@@ -25,7 +25,7 @@ foreach ($list_directori as $key)
             echo $stream ."\n";
         $sql_insert_file="insert into loadd_file (name, status, stream) value('$key', 1, '$stream')";
         mysqli_query($connect, $sql_insert_file);
-        rename('/var/www/html/upload/'.$key, '/var/www/html/upload/in/'.$key);
+        rename("/var/www/html/upload/$key", "/var/www/html/upload/in/$key");
         $count_scan_file++;
        }
 
