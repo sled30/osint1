@@ -28,6 +28,13 @@ function loadavito_avto($load_file, $connect)
       $date[$i]=mysqli_real_escape_string($connect, $date[$i]);
       // echo $date[$i];
     }
+    version=dict_version_avto_id
+    type=dict_type_dvs_id
+    actuator=dict_actuator_id
+    body_type=dict_body_type_id
+    rudder=dict_rudder_id
+
+
     $sql_select_avto_name="select id from avito_name_avto where model='$date[0]'
     and year_of_manufacture='$date[1]' and version='$date[3]' and type='$date[4]' and actuator='$date[5]'
     and body_type='$date[6]' and rudder='$date[7]'";

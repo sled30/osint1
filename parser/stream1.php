@@ -4,7 +4,7 @@ $stream=1;
 require_once '../config/db.connect.php';
 require_once 'function.php';
 $load_dir="/var/www/html/upload/in/";
-$sql_get_file="select id, name from loadd_file where status=1 and stream='$stream'";
+$sql_get_file="select id, name from loadd_file where status=1 and stream='$stream' and source='1'";
 $db_get_file=mysqli_query($connect, $sql_get_file);
 //var_dump($db_get_file);
 while($array_get_file=mysqli_fetch_assoc($db_get_file))
@@ -23,9 +23,9 @@ while($array_get_file=mysqli_fetch_assoc($db_get_file))
   #exit;
   loadavito_avto($load_file, $connect);
   $sql_file_id=$array_get_file['id'];
-  $sql_update_status="update loadd_file set status=3 where id='$sql_file_id'";
+  $sql_update_status="update loadd_file set dict_load_file_=3 where id='$sql_file_id'";
   mysqli_query($connect, $sql_update_status);
-  #$rename_load="/var/www/html/upload/load/";
+  $rename_load="/var/www/html/upload/load/";
   fclose($readfile);
   rename($load_file, $rename_load.$array_get_file['name']);
 
