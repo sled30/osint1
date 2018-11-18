@@ -4,7 +4,7 @@ $stream=1;
 require_once '../config/db.connect.php';
 require_once 'function.php';
 $load_dir="/var/www/html/upload/in/";
-$sql_get_file="select id, name from loadd_file where status=1 and stream='$stream' and source='1'";
+$sql_get_file="select id, name from loadd_file where dict_load_file_id=1 and stream='$stream' and source_id='1'";
 $db_get_file=mysqli_query($connect, $sql_get_file);
 //var_dump($db_get_file);
 while($array_get_file=mysqli_fetch_assoc($db_get_file))

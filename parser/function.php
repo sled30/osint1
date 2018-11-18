@@ -26,25 +26,77 @@ function loadavito_avto($load_file, $connect)
     {
       $date[$i]=trim($date[$i]);
       $date[$i]=mysqli_real_escape_string($connect, $date[$i]);
-      // echo $date[$i];
+      echo $date[$i];
     }
-    version=dict_version_avto_id
-    type=dict_type_dvs_id
-    actuator=dict_actuator_id
-    body_type=dict_body_type_id
+    ##########################   ахтунг переработать таблицы  #################
+  /*  ------------------version=dict_version_avto_id
+    --------------------type=dict_type_dvs_id
+    --------------------actuator=dict_actuator_id
+    --------------------body_type=dict_body_type_id
     rudder=dict_rudder_id
-
-
+*/
+    $sql_version="select id from dict_version_avto where name='$date[3]'";
+    $db_version=mysqli_query($connect, $sql_version);
+    $id_version_avto=mysqli_fetch_assoc($db_version);
+    $version_avto=$id_version_avto['id'];
+    if(!$version_avto)
+    {
+      $sql_insert_version="insert into dict_version_avto(name) value('$date[3]')";
+      mysqli_query($connect, $sql_insert_version);
+      $version_avto=mysqli_insert_id($connect);
+    }
+    $sql_type_avto="select id dict_type_dvs_id where name='$date[4]'";
+    $db_type_avto=mysqli_query($connect, $sql_type_avto);
+    $id_type_avto=mysqli_fetch_assoc($db_type_avto);
+    $type_dvs=$id_type_avto['id'];
+    if(!$type_dvs)
+    {
+      $sql_insert_type_dvs="insert into dict_dvs(name) value('$date[3]')";
+      mysqli_query($connect, $sql_insert_type_dvs);
+      $type_dvs=mysqli_insert_id($connect);
+    }
+    $sql_actuator="select id from dict_actuator where name='$date[5]'";
+    $db_actuator_avto=mysqli_query($connect, $sql_actuator);
+    $id_actuator_avto=mysqli_fetch_assoc($db_actuator_avto);
+    $id_actuator=$id_actuator_avto['id'];
+    if(!$id_actuator)
+    {
+      $sql_insert_actuator_avto="insert into dict_actuator where name='$date[5]'";
+      mysqli_query($connect, $sql_insert_actuator_avto);
+      $id_actuator=mysqli_insert_id($connect);
+    }
+    $sql_body_type="select id from dict_body_type where name='$date[6]'";
+    $db_body_type_avto=mysqli_query($connect, $sql_body_type);
+    $body_type_avto=mysqli_fetch_assoc($db_body_type_avto);
+    $id_body_type_avto=$body_type_avto['id'];
+    if(!$id_body_type_avto)
+    {
+      $sql_insert_body_type="insert into dict_body_type(name) value($date[6])";
+      mysqli_query($connect, $sql_insert_body_type);
+      $id_body_type_avto=mysqli_insert_id($connect);
+    }
+    $sql_rudder_avto="select id from dict_rudder where name='$date[7]'";
+    $db_rudder_avto=mysqli_query($connect, $sql_rudder_avto);
+    $rudder_avto=mysqli_fetch_assoc($db_rudder_avto);
+    $id_rudder_avto=$rudder_avto['id'];
+    if(!$id_rudder_avto)
+    {
+      $sql_insert_rudder_avto="insert into dict_rudder(name) value('$date[7]')";
+      mysqli_query($nnect, $sql_insert_rudder_avto);
+      $id_rudder_avto=mysqli_insert_id($connect);
+    }
     $sql_select_avto_name="select id from avito_name_avto where model='$date[0]'
-    and year_of_manufacture='$date[1]' and version='$date[3]' and type='$date[4]' and actuator='$date[5]'
-    and body_type='$date[6]' and rudder='$date[7]'";
+    and year_of_manufacture='$date[1]' and dict_version_avto_id='$version_avto'
+    and dict_type_dvs_id='$type_dvs' and dict_actuator_id='$id_actuator'
+    and dict_body_type_id='$id_body_type_avto' and dict_rudder_id='$id_rudder_avto'";
     $db_select_avto=mysqli_query($connect, $sql_select_avto_name);
     $select_avto=mysqli_fetch_assoc($db_select_avto);
     $id_avto_avito=$select_avto['id'];
     if(!$id_avto_avito)
     {
-      $sql_insert_avto_name="insert into avito_name_avto (model, year_of_manufacture, version, type, actuator, body_type, rudder)
-      value('$date[0]', '$date[1]', '$date[3]', '$date[4]', '$date[5]', '$date[6]', '$date[7]')";
+      $sql_insert_avto_name="insert into avito_name_avto (model, year_of_manufacture, dict_version_avto_id, dict_type_dvs_id,
+      dict_actuator_id, dict_body_type_id, dict_rudder_id)
+      value('$date[0]', '$date[1]', '$version_avto', '$type_dvs', '$id_actuator', '$id_body_type_avto', '$id_rudder_avto')";
       mysqli_query($connect, $sql_insert_avto_name);
       $id_avto_avito=mysqli_insert_id($connect);
     }
@@ -95,8 +147,5 @@ function loadavito_avto($load_file, $connect)
     echo $count;
     echo "\n";
   }
-
-
-
 }
  ?>
