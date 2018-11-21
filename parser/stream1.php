@@ -23,7 +23,7 @@ while($array_get_file=mysqli_fetch_assoc($db_get_file))
   #exit;
   loadavito_avto($load_file, $connect);
   $sql_file_id=$array_get_file['id'];
-  $sql_update_status="update loadd_file set dict_load_file_=3 where id='$sql_file_id'";
+  $sql_update_status="update loadd_file set dict_load_file_id=3 where id='$sql_file_id'";
   mysqli_query($connect, $sql_update_status);
   $rename_load="/var/www/html/upload/load/";
   fclose($readfile);
