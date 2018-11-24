@@ -11,7 +11,13 @@ function loadavito_avto($load_file, $connect)
     $date=fgetcsv($readfile, 0, ",");
         /*блок сохранения машины*/
         #exit;
+
         print_r($date);
+        if(is_bool($date))
+        {
+          fclose($readfile);
+          return;
+        }
 
     if(!isset($date[3]))
     {
@@ -28,13 +34,7 @@ function loadavito_avto($load_file, $connect)
       $date[$i]=mysqli_real_escape_string($connect, $date[$i]);
       #echo $date[$i];
     }
-    ##########################   ахтунг переработать таблицы  #################
-  /*  ------------------version=dict_version_avto_id
-    --------------------type=dict_type_dvs_id
-    --------------------actuator=dict_actuator_id
-    --------------------body_type=dict_body_type_id
-    rudder=dict_rudder_id
-*/
+
     $sql_version="select id from dict_version_avto where name='$date[3]'";
     $db_version=mysqli_query($connect, $sql_version);
     $id_version_avto=mysqli_fetch_assoc($db_version);
@@ -89,7 +89,7 @@ function loadavito_avto($load_file, $connect)
       $id_rudder_avto=mysqli_insert_id($connect);
     }
     $sql_select_avto_name="select id from avito_name_avto where model='$date[0]'
-    and year_of_manufacture='$date[1]' and dict_version_avto_id='$version_avto'
+    and dict_version_avto_id='$version_avto'
     and dict_type_dvs_id='$type_dvs' and dict_actuator_id='$id_actuator'
     and dict_body_type_id='$id_body_type_avto' and dict_rudder_id='$id_rudder_avto'";
     $db_select_avto=mysqli_query($connect, $sql_select_avto_name);
@@ -97,9 +97,9 @@ function loadavito_avto($load_file, $connect)
     $id_avto_avito=$select_avto['id'];
     if(!$id_avto_avito)
     {
-      $sql_insert_avto_name="insert into avito_name_avto (model, year_of_manufacture, dict_version_avto_id, dict_type_dvs_id,
+      $sql_insert_avto_name="insert into avito_name_avto (model, dict_version_avto_id, dict_type_dvs_id,
       dict_actuator_id, dict_body_type_id, dict_rudder_id)
-      value('$date[0]', '$date[1]', '$version_avto', '$type_dvs', '$id_actuator', '$id_body_type_avto', '$id_rudder_avto')";
+      value('$date[0]', '$version_avto', '$type_dvs', '$id_actuator', '$id_body_type_avto', '$id_rudder_avto')";
       mysqli_query($connect, $sql_insert_avto_name);
       $id_avto_avito=mysqli_insert_id($connect);
     }
@@ -143,16 +143,28 @@ function loadavito_avto($load_file, $connect)
     /*продавца сохранил конец блока*/
 
     /*сохранение основного блока*/
+    $sql_avito_avto= "select id from avito_avto where
+    id_avto= '$id_avto_avito'  and mileage='$date[2]' and color='$date[8]' and status='$date[9]'
+    and price='$date[10]' and  avito_avtor_name_id='$id_avtor' and  avito_sity_id ='$id_sity'
+    and phone_id='$id_phone' and link_ad='$date[14]' and source='1' and  avito_name_avto_id=$id_avto_avito";
+    $db_avito_avto=mysqli_query($connect, $sql_avito_avto);
+    $id_avto_sql=mysqli_fetch_assoc($db_avito_avto);
+    $avito_avto=$id_avto_sql['id'];
+    if(!$avito_avto)
+    {
     $sqladdavito="insert into avito_avto(id_avto, mileage, color, status, price, avito_avtor_name_id,
-    avito_sity_id, phone_id, link_ad, source, avito_name_avto_id)
+    avito_sity_id, phone_id, link_ad, source, avito_name_avto_id, year_of_manufacture)
     value('$id_avto_avito', '$date[2]',
-    '$date[8]', '$date[9]', '$date[10]', '$id_avtor', '$id_sity', '$id_phone', '$date[14]', '1',$id_avto_avito)";
-    echo $sqladdavito;
+    '$date[8]', '$date[9]', '$date[10]', '$id_avtor', '$id_sity', '$id_phone', '$date[14]', '1', '$id_avto_avito', '$date[1]')";
+  #  echo $sqladdavito;
     mysqli_query($connect, $sqladdavito);
+    }
     /*конец основного блока*/
-    $count++;
-    echo $count;
-    echo "\n";
+  #  $count++;
+  #  echo $count;
+  #  echo "\n";
+
   }
+  fclose($readfile);
 }
  ?>
