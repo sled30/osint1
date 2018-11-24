@@ -1,5 +1,61 @@
 <?php
 require_once '../config/db.connect.php';
+function dbrequest($sqlrequest, $sqlinsert, $connect)
+{
+  $db_quest=mysqli_query($connect, $sqlrequest, $sqlinsert);
+  $id_request=mysqli_fetch_assoc($db_quest);
+  $request=$id_request['id'];
+  if(!$request)
+  {
+    mysqli_query($connect, $sqlinsert);
+    $request=mysqli_insert_id($connect);
+  }
+  return $request;
+}
+function loadavito_other($load_file, $connect)
+{
+  $readfile=fopen($load_file, "r");
+  $count=0;
+  while(!feof($readfile))
+  {
+    $date=fgetcsv($readfile, 0, ",");
+    print_r($date);
+    if(is_bool($date))
+    {
+      fclose($readfile);
+      return;
+    }
+
+    /*         avito_avtor_name_id    афтар    */
+    $sql_select_avtor="select id from avito_avtor_name where name='$date[11]'";
+    $sql_insert_avito_avtor="insert into avito_avtor_name(name) value('$date[11]')";
+    $avito_avtor_name=dbrequest($sql_select_avtor, $sql_insert_avito_avtor, $connect);
+    /*    энд*/
+    /*        avito_sity_id     город */
+    $sql_select_sity="select id from avito_sity where sity_name='$date[12]'";
+    $sql_insert_avito_sity="insert into avito_sity (sity_name)  value ('$date[12]')";
+    $avito_sity_id=dbrequest($sql_select_sity, $sql_insert_avto_name, $connect);
+    /*    энд */
+/*        phone_id     телефон   */
+    $sql_select_avito_phone="select id from phone where phone_number='$date[13]'";
+    $sql_insert_avito_phone="insert into phone(phone_number) value('$date[13]')";
+    $phone_id=dbrequest($sql_select_avito_phone, $sql_insert_avito_phone, $connect);
+
+      /*энд*/
+   /*          avito_catalog_idavito_catalog  каталог*/
+    $sql_select_catalog="select id from avito_catalog where catalog_name=''";
+    $insert_avito_catalog="insert into avito_catalog(catalog_name) value('')";
+    $avito_catalog=dbrequest($sql_select_catalog, $insert_avito_catalog, $connect);
+/*    энд*/
+/*           сохранение основной таблицы */
+    $sql_other="select id from avito_other where price=''
+    and link_ad='' and avito_avtor_name_id='$avito_avtor_name' and avito_sity_id='$avito_sity_id'
+    and phone_id='$phone_id'and avito_catalog_idavito_catalog='$avito_catalog'";
+    $insert_avito_other="insert into avito_other(price, avito_avtor_name_id, avito_sity_id, phone_id, avito_catalog_idavito_catalog, link_ad)
+    value()";
+    dbrequest($sql_other, $insert_avito_other, $connect);
+    }
+}
 function loadavito_avto($load_file, $connect)
 {
 
@@ -34,7 +90,6 @@ function loadavito_avto($load_file, $connect)
       $date[$i]=mysqli_real_escape_string($connect, $date[$i]);
       #echo $date[$i];
     }
-
     $sql_version="select id from dict_version_avto where name='$date[3]'";
     $db_version=mysqli_query($connect, $sql_version);
     $id_version_avto=mysqli_fetch_assoc($db_version);
