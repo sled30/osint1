@@ -2,10 +2,12 @@
 require_once '../config/db.connect.php';
 function dbrequest($sqlrequest, $sqlinsert, $connect)
 {
-  $db_quest=mysqli_query($connect, $sqlrequest, $sqlinsert);
+  $db_quest=mysqli_query($connect, $sqlrequest);
   $id_request=mysqli_fetch_assoc($db_quest);
   $request=$id_request['id'];
-  if(!$request)
+  echo $sqlrequest ."\n";
+  echo $sqlinsert ."\n";
+    if(!$request)
   {
     mysqli_query($connect, $sqlinsert);
     $request=mysqli_insert_id($connect);
@@ -25,34 +27,40 @@ function loadavito_other($load_file, $connect)
       fclose($readfile);
       return;
     }
+    for($i=0; $i<6; $i++)
+    {
+      $date[$i]=trim($date[$i]);
+      $date[$i]=mysqli_real_escape_string($connect, $date[$i]);
+      #echo $date[$i];
+    }
 
-    /*         avito_avtor_name_id    афтар    */
-    $sql_select_avtor="select id from avito_avtor_name where name='$date[11]'";
-    $sql_insert_avito_avtor="insert into avito_avtor_name(name) value('$date[11]')";
+/*    /*         avito_avtor_name_id    афтар    */
+    $sql_select_avtor="select id from avito_avtor_name where name='$date[3]'";
+    $sql_insert_avito_avtor="insert into avito_avtor_name(name) value('$date[3]')";
     $avito_avtor_name=dbrequest($sql_select_avtor, $sql_insert_avito_avtor, $connect);
     /*    энд*/
     /*        avito_sity_id     город */
-    $sql_select_sity="select id from avito_sity where sity_name='$date[12]'";
-    $sql_insert_avito_sity="insert into avito_sity (sity_name)  value ('$date[12]')";
-    $avito_sity_id=dbrequest($sql_select_sity, $sql_insert_avto_name, $connect);
+    $sql_select_sity="select id from avito_sity where sity_name='$date[4]'";
+    $sql_insert_avito_sity="insert into avito_sity (sity_name)  value ('$date[4]')";
+    $avito_sity_id=dbrequest($sql_select_sity, $sql_insert_avito_sity, $connect);
     /*    энд */
 /*        phone_id     телефон   */
-    $sql_select_avito_phone="select id from phone where phone_number='$date[13]'";
-    $sql_insert_avito_phone="insert into phone(phone_number) value('$date[13]')";
+    $sql_select_avito_phone="select id from phone where phone_number='$date[5]'";
+    $sql_insert_avito_phone="insert into phone(phone_number) value('$date[5]')";
     $phone_id=dbrequest($sql_select_avito_phone, $sql_insert_avito_phone, $connect);
 
       /*энд*/
    /*          avito_catalog_idavito_catalog  каталог*/
-    $sql_select_catalog="select id from avito_catalog where catalog_name=''";
-    $insert_avito_catalog="insert into avito_catalog(catalog_name) value('')";
-    $avito_catalog=dbrequest($sql_select_catalog, $insert_avito_catalog, $connect);
+    $sql_select_catalog="select id from avito_catalog where catalog_name='$date[0]'";
+    $insert_avito_catalog="insert into avito_catalog(catalog_name) value('$date[0]')";
+   $avito_catalog=dbrequest($sql_select_catalog, $insert_avito_catalog, $connect);
 /*    энд*/
 /*           сохранение основной таблицы */
-    $sql_other="select id from avito_other where price=''
-    and link_ad='' and avito_avtor_name_id='$avito_avtor_name' and avito_sity_id='$avito_sity_id'
+    $sql_other="select id from avito_other where price='$date[2]'
+    and link_ad='$date[6]' and avito_avtor_name_id='$avito_avtor_name' and avito_sity_id='$avito_sity_id'
     and phone_id='$phone_id'and avito_catalog_idavito_catalog='$avito_catalog'";
     $insert_avito_other="insert into avito_other(price, avito_avtor_name_id, avito_sity_id, phone_id, avito_catalog_idavito_catalog, link_ad)
-    value()";
+    value('$date[2]', '$avito_avtor_name', '$avito_sity_id', '$phone_id',  '$avito_catalog', '$date[6]')";
     dbrequest($sql_other, $insert_avito_other, $connect);
     }
 }
