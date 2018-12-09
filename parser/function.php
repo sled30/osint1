@@ -1,9 +1,58 @@
 <?php
-require_once '../config/db.connect.php';
+require_once 'db.connect.php';
+
+function vk_parser($load_file, $connect)
+{
+  $load=file_get_contents($load_file);
+  	$line=explode("\n", $load);
+  	if(!empty($line) && $line!="")
+  	{
+
+  		foreach ($line as $key => $string)
+  		{
+
+  			if(!empty($string))
+  			{ //$i=0;
+  				$date=explode(',', $string);
+  				for ($i=0; $i < 5; $i++)
+  				{
+  					$date[$i]=trim($date[$i], " \'");
+
+  				}
+  					$id1=$date[1];
+  					$id2=$date[2];
+
+  					$id4=$date[4];
+  					$id4=trim($id4, "\x0D");
+  					$id4=trim($id4, "\;");
+            //$id4=htmlspecialchars(trim($id4, ")"));
+  					$id4=addslashes(trim($id4, ")"));
+
+            for($i=0; $i<3; $i++)
+            {
+              #mysqli_set_charset($connect, "utf8");
+              //$date[$i]=trim($date[$i]);
+              $date[$i]=addslashes($date[$i]);
+              #echo $date[$i];
+            }
+            $select_vk_mail="select id from mail where name ='$date[2]'";
+  					$insert_vk_mail="insert into mail(name) value('$date[2]')";
+  					$vk_mail=dbrequest($select_vk_mail, $insert_vk_mail, $connect);
+  					$sql_phone="select id from phone where phone_number='$id4'";
+  			    $insert_phone="insert into phone(phone_number) value('$id4')";
+  					$phone_id=dbrequest($sql_phone, $insert_phone, $connect);
+  					$select_vk_parser="select id from vk_parser where first_name='$date[0]' and last_name='$date[1]' and mail_id='$vk_mail'
+  					and password='$date[3]'	and phone_id='$phone_id'";
+  					$insert_vk_parser="insert into vk_parser(first_name, last_name, password, mail_id, phone_id) value('$date[0]', '$date[1]', '$date[3]', '$vk_mail', '$phone_id')";
+  					$vk_parser=dbrequest($select_vk_parser, $insert_vk_parser, $connect);
+          }}}
+}
 
 function dbrequest($sqlrequest, $sqlinsert, $connect)
 {
   $db_quest=mysqli_query($connect, $sqlrequest);
+  //echo $sqlrequest;
+  //echo "\n";
   $id_request=mysqli_fetch_assoc($db_quest);
   $request=$id_request['id'];
 
