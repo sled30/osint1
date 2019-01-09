@@ -46,10 +46,12 @@ function vk_parser($load_file, $connect)
   					$insert_vk_parser="insert into vk_parser(first_name, last_name, password, mail_id, phone_id) value('$date[0]', '$date[1]', '$date[3]', '$vk_mail', '$phone_id')";
   					$vk_parser=dbrequest($select_vk_parser, $insert_vk_parser, $connect);
           }}}
+
 }
 
 function dbrequest($sqlrequest, $sqlinsert, $connect)
 {
+
   $db_quest=mysqli_query($connect, $sqlrequest);
   //echo $sqlrequest;
   //echo "\n";
@@ -61,7 +63,9 @@ function dbrequest($sqlrequest, $sqlinsert, $connect)
     mysqli_query($connect, $sqlinsert);
     $request=mysqli_insert_id($connect);
   }
+//  mysqli_close($connect);
   return $request;
+
 }
 function loadauto_ru($load_file, $connect)
 {
