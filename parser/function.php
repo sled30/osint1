@@ -1,18 +1,216 @@
 <?php
-require_once '../config/db.connect.php';
+//require_once 'db.connect.php';
+function wildbiris($stream){
+  /*readdata->ser_wildb_string*/
+  $a=readdata($stream);
+  $b=serialize_string($a);
+}
+/*разбираю массив для сохранения на поля от сериалайза строки*/
+function wildbiris_serialize($array){
+  if(!empty($array[4])){
+  $array[4] = '7'.$array[4];
+}
+  if(!empty($array[5])){
+    $array[5] = '7'.$array[5];
+  }
+  if(!empty($array[6])){
+    $array[6] = '7'.$array[6];
+  }
+  print_r($array);
+  echo "\n";
+
+
+  //for
+  /*$cod = $array[1];
+  $name = $array[2];
+  $coment = $array[3];
+  $phone_1 = $array[4];
+  $mobile_phone = $array[5];
+  $work_phone = $array[6];
+  $dop_phone = $array[7];
+  $email = $array[8];
+  $address = $array[9]
+  $region = $array[10];
+  $sity = $array[11];
+  */
+
+}
+function serialize_string($line){
+  //var_dump($line);
+  foreach ($line as $string){
+    // пришли строки
+    if(!empty($string)){ //$i=0;
+      $date=explode(';', $string);
+       //print_r($date);
+       wildbiris_serialize($date);
+    }
+  }
+  return 0;
+}
+function readdata($file){
+  $load =file_get_contents($file);
+  $line =explode("\n", $load);
+  //var_dump($line);
+  return $line;
+}
+
+function vk_parser($load_file, $connect)
+{
+  $load=file_get_contents($load_file);
+  	$line=explode("\n", $load);
+  	if(!empty($line) && $line!="")
+  	{
+
+  		foreach ($line as $key => $string)
+  		{
+
+  			if(!empty($string))
+  			{ //$i=0;
+  				$date=explode(',', $string);
+  				for ($i=0; $i < 5; $i++)
+  				{
+  					$date[$i]=trim($date[$i], " \'");
+
+  				}
+  					$id1=$date[1];
+  					$id2=$date[2];
+
+  					$id4=$date[4];
+  					$id4=trim($id4, "\x0D");
+  					$id4=trim($id4, "\;");
+            //$id4=htmlspecialchars(trim($id4, ")"));
+  					$id4=addslashes(trim($id4, ")"));
+
+            for($i=0; $i<3; $i++)
+            {
+              #mysqli_set_charset($connect, "utf8");
+              //$date[$i]=trim($date[$i]);
+              $date[$i]=addslashes($date[$i]);
+              #echo $date[$i];
+            }
+            $select_vk_mail="select id from mail where name ='$date[2]'";
+  					$insert_vk_mail="insert into mail(name) value('$date[2]')";
+  					$vk_mail=dbrequest($select_vk_mail, $insert_vk_mail, $connect);
+  					$sql_phone="select id from phone where phone_number='$id4'";
+  			    $insert_phone="insert into phone(phone_number) value('$id4')";
+  					$phone_id=dbrequest($sql_phone, $insert_phone, $connect);
+  					$select_vk_parser="select id from vk_parser where first_name='$date[0]' and last_name='$date[1]' and mail_id='$vk_mail'
+  					and password='$date[3]'	and phone_id='$phone_id'";
+  					$insert_vk_parser="insert into vk_parser(first_name, last_name, password, mail_id, phone_id) value('$date[0]', '$date[1]', '$date[3]', '$vk_mail', '$phone_id')";
+  					$vk_parser=dbrequest($select_vk_parser, $insert_vk_parser, $connect);
+          }}}
+
+}
+
 function dbrequest($sqlrequest, $sqlinsert, $connect)
 {
+
   $db_quest=mysqli_query($connect, $sqlrequest);
+  //echo $sqlrequest;
+  //echo "\n";
   $id_request=mysqli_fetch_assoc($db_quest);
   $request=$id_request['id'];
-  echo $sqlrequest ."\n";
-  echo $sqlinsert ."\n";
+
     if(!$request)
   {
     mysqli_query($connect, $sqlinsert);
     $request=mysqli_insert_id($connect);
   }
+//  mysqli_close($connect);
   return $request;
+
+}
+function loadauto_ru($load_file, $connect)
+{
+  $readfile=fopen($load_file, "r");
+  $count=0;
+  while(!feof($readfile))
+  {
+    $date=fgetcsv($readfile, 0, ",");
+    print_r($date);
+    if(is_bool($date))
+    {
+      fclose($readfile);
+      return;
+    }
+    for($i=0; $i<6; $i++)
+    {
+      $date[$i]=trim($date[$i]);
+      $date[$i]=mysqli_real_escape_string($connect, $date[$i]);
+      #echo $date[$i];
+    }
+    /*модель*/ #auto_model
+    $sql_sel_auto_model="select id from auto_model where model_name='$date[0]'";
+    $insert_auto_model="insert into auto_model (model_name) value('$date[0]')";
+    $auto_model=dbrequest($sql_sel_auto_model,   $insert_auto_model, $connect);
+    /*модификация*/ # auto_modif
+    $sql_sel_auto_modif="select id from auto_modif where auto_modifcol='$date[1]'";
+    $insert_auto_modif="insert into auto_modif (auto_modifcol) value('$date[1]')";
+    $auto_modif=dbrequest($sql_sel_auto_modif, $insert_auto_modif, $connect);
+
+    /*год выпуска*/#auto_year
+    $sql_sel_auto_year="select id from auto_year where auto_yearcol='$date[2]'";
+    $insert_auto_year="insert into auto_year (auto_yearcol) value ('$date[2]')";
+    $auto_year=dbrequest($sql_sel_auto_year, $insert_auto_year, $connect);
+
+    /*кпп*/ #auto_kpp
+    $sql_sel_auto_kpp="select id from auto_kpp where auto_kppcol='$date[3]'";
+    $insert_auto_kpp="insert into auto_kpp (auto_kppcol) value('$date[3]')";
+    $auto_kpp=dbrequest($sql_sel_auto_kpp, $insert_auto_kpp, $connect);
+    /*тип двигателя*/#auto_dvs
+    $sql_auto_dvs="select id from auto_dvs where auto_dvscol='$date[4]'";
+    $insert_auto_dvs="insert into auto_dvs (auto_dvscol) value ('$date[4]')";
+    $auto_dvs=dbrequest($sql_auto_dvs, $insert_auto_dvs, $connect);
+    /*количество хозяинов*/ #auto_own
+    $sql_auto_own="select id from auto_own where auto_owncol='$date[6]'";
+    $insert_auto_own="insert into auto_own (auto_owncol) value ('$date[6]')";
+    $auto_own=dbrequest($sql_auto_own, $insert_auto_own, $connect);
+    /*привод*/#dict_actuator
+    $sql_dict_actuator="select id from dict_actuator where name='$date[7]'";
+    $insert_dict_actuator="insert into dict_actuator(name) value('$date[7]')";
+    $dict_actuator=dbrequest($sql_dict_actuator, $insert_dict_actuator, $connect);
+        /*обмен*/#auto_exchange
+    $sql_auto_exchange="select id from auto_exchange where auto_exchangecol='$date[8]'";
+    $insert_auto_exchange="insert into auto_exchange(auto_exchangecol) value('$date[8]')";
+    $auto_exchange=dbrequest($sql_auto_exchange, $insert_auto_exchange, $connect);
+          /*наличие*/#auto_status
+    $sql_auto_status="select id from auto_status where auto_statuscol='$date[9]'";
+    $insert_auto_status="insert into auto_status(auto_statuscol) value('$date[9]')";
+    $auto_status=dbrequest($sql_auto_status, $insert_auto_status, $connect);
+            /*состояние*/#auto_condition
+    $sql_auto_condition="select id from auto_condition where auto_conditioncol='$date[10]'";
+    $insert_auto_condition="insert into auto_condition(auto_conditioncol) value('$date[10]')";
+    $auto_condition=dbrequest($sql_auto_condition, $insert_auto_condition, $connect);
+    /*тип кузова цвет*/#auto_body
+    $sql_auto_body="select id from auto_body where auto_bodycol='$date[11]'";
+    $insert_auto_body="insert into auto_body(auto_bodycol) value('$date[11]')";
+    $auto_body=dbrequest($sql_auto_body, $insert_auto_body, $connect);
+    /*руль*/#dict_rudder
+    $sql_dict_rudder="select id from dict_rudder where name='$date[12]'";
+    $insert_dict_rudder="insert into dict_rudder(name) value('$date[12]')";
+    $dict_rudder=dbrequest($sql_dict_rudder, $insert_dict_rudder, $connect);
+    /*город*/ #avito_sity
+    $sql_avito_sity="select id from avito_sity where sity_name='$date[14]'";
+    $insert_avito_sity="insert into avito_sity(sity_name) value('$date[14]')";
+    $avito_sity=dbrequest($sql_avito_sity, $insert_avito_sity, $connect);
+    /*владелец*/#avito_avtor_name
+    $sql_avito_avtor_name="select id from avito_avtor_name where name='$date[15]'";
+    $insert_avito_avtor_name="insert into avito_avtor_name(name) value('$date[15]')";
+    $avito_avtor_name=dbrequest($sql_avito_avtor_name, $insert_avito_avtor_name, $connect);
+    /*телефон*/#phone
+    $sql_phone="select id from phone where phone_number='$date[16]'";
+    $insert_phone="insert into phone(phone_number) value('$date[16]')";
+    $phone=dbrequest($sql_phone, $insert_phone, $connect);
+
+                         	/*основное*/   /*цена*/ /*пробег*/
+    $select_auto="select id from auto where auto_model_id='$auto_model' and auto_modif_id='$auto_modif' and auto_year_id='$auto_year' and auto_kpp_id='$auto_kpp'
+    and auto_dvs_id='$auto_dvs' and auto_own_id='$auto_own' and auto_exchange_id='$auto_exchange' and auto_status_id='$auto_status' and auto_condition_id='$auto_condition'
+    and auto_body_id='$auto_body'  and dict_rudder_id='$dict_rudder' and avito_sity_id='$avito_sity' and phone_id='$phone' and probeg='$date[5]' and sell='$date[13]'";
+    $insert_auto="insert into auto(auto_model_id, auto_modif_id, auto_year_id, auto_kpp_id, auto_dvs_id, auto_own_id, auto_exchange_id, auto_status_id, auto_condition_id, auto_body_id, dict_rudder_id, avito_sity_id, phone_id, probeg, sell)
+     value('$auto_model', '$auto_modif', '$auto_year', '$auto_kpp', '$auto_dvs', '$auto_own', '$auto_exchange', '$auto_status', '$auto_condition', '$auto_body', '$dict_rudder', '$avito_sity', '$phone', '$date[5]', '$date[13]')";
+     dbrequest($select_auto, $insert_auto, $connect);
+}
+
 }
 function loadavito_other($load_file, $connect)
 {
@@ -58,9 +256,9 @@ function loadavito_other($load_file, $connect)
 /*           сохранение основной таблицы */
     $sql_other="select id from avito_other where price='$date[2]'
     and link_ad='$date[6]' and avito_avtor_name_id='$avito_avtor_name' and avito_sity_id='$avito_sity_id'
-    and phone_id='$phone_id'and avito_catalog_idavito_catalog='$avito_catalog'";
-    $insert_avito_other="insert into avito_other(price, avito_avtor_name_id, avito_sity_id, phone_id, avito_catalog_idavito_catalog, link_ad)
-    value('$date[2]', '$avito_avtor_name', '$avito_sity_id', '$phone_id',  '$avito_catalog', '$date[6]')";
+    and phone_id='$phone_id'and avito_catalog_idavito_catalog='$avito_catalog'and text_sel='$date[1]'";
+    $insert_avito_other="insert into avito_other(price, avito_avtor_name_id, avito_sity_id, phone_id, avito_catalog_idavito_catalog, link_ad, text_sel)
+    value('$date[2]', '$avito_avtor_name', '$avito_sity_id', '$phone_id',  '$avito_catalog', '$date[6]', '$date[1]')";
     dbrequest($sql_other, $insert_avito_other, $connect);
     }
 }
