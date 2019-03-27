@@ -1,6 +1,6 @@
 <?php
 set_time_limit(0);
-require_once '../db.connect.php';
+require_once 'db.connect.php';
 #echo 1;
 $list_directori=scandir('/home/sled/vk',SCANDIR_SORT_NONE);
 $count_scan_file=1;
