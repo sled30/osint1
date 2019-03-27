@@ -1,5 +1,58 @@
 <?php
-require_once 'db.connect.php';
+//require_once 'db.connect.php';
+function wildbiris($stream){
+  /*readdata->ser_wildb_string*/
+  $a=readdata($stream);
+  $b=serialize_string($a);
+}
+/*разбираю массив для сохранения на поля от сериалайза строки*/
+function wildbiris_serialize($array){
+  if(!empty($array[4])){
+  $array[4] = '7'.$array[4];
+}
+  if(!empty($array[5])){
+    $array[5] = '7'.$array[5];
+  }
+  if(!empty($array[6])){
+    $array[6] = '7'.$array[6];
+  }
+  print_r($array);
+  echo "\n";
+
+
+  //for
+  /*$cod = $array[1];
+  $name = $array[2];
+  $coment = $array[3];
+  $phone_1 = $array[4];
+  $mobile_phone = $array[5];
+  $work_phone = $array[6];
+  $dop_phone = $array[7];
+  $email = $array[8];
+  $address = $array[9]
+  $region = $array[10];
+  $sity = $array[11];
+  */
+
+}
+function serialize_string($line){
+  //var_dump($line);
+  foreach ($line as $string){
+    // пришли строки
+    if(!empty($string)){ //$i=0;
+      $date=explode(';', $string);
+       //print_r($date);
+       wildbiris_serialize($date);
+    }
+  }
+  return 0;
+}
+function readdata($file){
+  $load =file_get_contents($file);
+  $line =explode("\n", $load);
+  //var_dump($line);
+  return $line;
+}
 
 function vk_parser($load_file, $connect)
 {
