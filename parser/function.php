@@ -1,12 +1,41 @@
 <?php
-//require_once 'db.connect.php';
-function wildbiris($stream){
+require_once './config/db.connect.php';
+function dbrequest($sqlrequest, $sqlinsert, $connect){
+//var_dump($connect);
+//echo $sqlrequest;
+  $db_quest=mysqli_query($connect, $sqlrequest);
+  if(is_bool($db_quest)){
+    var_dump($sqlrequest);
+  }
+
+  //echo "\n";
+  $id_request=mysqli_fetch_assoc($db_quest);
+
+  $request=$id_request['id'];
+  //echo $sqlinsert;
+
+    if(!$request)
+  {
+    mysqli_query($connect, $sqlinsert);
+    $request=mysqli_insert_id($connect);
+  }
+//  mysqli_close($connect);
+  return $request;
+
+}
+function wildbiris($stream, $connect){
   /*readdata->ser_wildb_string*/
   $a=readdata($stream);
-  $b=serialize_string($a);
+  $b=serialize_string($a, $connect);
 }
 /*разбираю массив для сохранения на поля от сериалайза строки*/
-function wildbiris_serialize($array){
+function wildbiris_serialize($array, $connect){
+  for($i=0; $i<8; $i++){
+    $array[$i] = addslashes($array[$i]);
+    if(empty($array[$i])){
+      $array[$i] = 'NULL';
+    }
+  }
   if(!empty($array[4])){
   $array[4] = '7'.$array[4];
 }
@@ -16,9 +45,33 @@ function wildbiris_serialize($array){
   if(!empty($array[6])){
     $array[6] = '7'.$array[6];
   }
-  print_r($array);
-  echo "\n";
+  if(empty($array[8])){
+    $array[8] = 'NULL';
+  }
+$mail_sel = "select id from mail where name ='$array[7]'";
+$mail_insert = "insert into mail(name) value('$array[7]')";
+$mail = dbrequest($mail_sel, $mail_insert, $connect);
 
+$sel_phone = "select id from phone where phone_number='$array[3]'";
+$ins_phone = "insert into phone(phone_number) value('$array[3]')";
+$phone = dbrequest($sel_phone, $ins_phone, $connect);
+
+ $sel_mobile_phone = "select id from phone where phone_number='$array[4]'";
+ $ins_mobile_phone = "insert into phone(phone_number) value('$array[4]')";
+ $mobile_phone = dbrequest($sel_mobile_phone, $ins_mobile_phone, $connect);
+
+ $sel_work_phone = "select id from phone where phone_number='$array[5]'";
+ $ins_work_phone = "insert into phone(phone_number) value('$array[5]')";
+ $work_phone = dbrequest($sel_work_phone, $ins_work_phone, $connect);
+
+ $sel_dop_phone = "select id from phone where phone_number='$array[6]'";
+ $ins_dop_phone = "insert into phone(phone_number) value('$array[6]')";
+ $dop_phone = dbrequest($sel_work_phone, $ins_work_phone, $connect);
+
+$sel_wildb = "select id from wildbires where user_id = '$array[0]' and name = '$array[1]' and comment ='$array[2]' and phone = '$phone'
+and mobile_phone = '$mobile_phone' and work_phone = '$work_phone' and dop_phone = '$dop_phone' and mail_id = '$mail' and address_idaddress = '$array[8]'";
+$ins_wildb = "insert into wildbires(user_id, name, comment, phone, mobile_phone, work_phone, dop_phone, mail_id, address_idaddress) value('$array[0]', '$array[1]', '$array[2]', '$phone', '$mobile_phone', '$work_phone', '$dop_phone', '$mail', '$array[8]')";
+$wildb = dbrequest($sel_wildb, $ins_wildb, $connect);
 
   //for
   /*$cod = $array[1];
@@ -35,14 +88,14 @@ function wildbiris_serialize($array){
   */
 
 }
-function serialize_string($line){
+function serialize_string($line, $connect){
   //var_dump($line);
   foreach ($line as $string){
     // пришли строки
     if(!empty($string)){ //$i=0;
       $date=explode(';', $string);
-       //print_r($date);
-       wildbiris_serialize($date);
+       //var_dump($connect);
+       wildbiris_serialize($date, $connect);
     }
   }
   return 0;
@@ -54,8 +107,7 @@ function readdata($file){
   return $line;
 }
 
-function vk_parser($load_file, $connect)
-{
+function vk_parser($load_file, $connect){
   $load=file_get_contents($load_file);
   	$line=explode("\n", $load);
   	if(!empty($line) && $line!="")
@@ -102,26 +154,8 @@ function vk_parser($load_file, $connect)
 
 }
 
-function dbrequest($sqlrequest, $sqlinsert, $connect)
-{
 
-  $db_quest=mysqli_query($connect, $sqlrequest);
-  //echo $sqlrequest;
-  //echo "\n";
-  $id_request=mysqli_fetch_assoc($db_quest);
-  $request=$id_request['id'];
-
-    if(!$request)
-  {
-    mysqli_query($connect, $sqlinsert);
-    $request=mysqli_insert_id($connect);
-  }
-//  mysqli_close($connect);
-  return $request;
-
-}
-function loadauto_ru($load_file, $connect)
-{
+function loadauto_ru($load_file, $connect){
   $readfile=fopen($load_file, "r");
   $count=0;
   while(!feof($readfile))
